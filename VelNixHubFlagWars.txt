@@ -141,12 +141,12 @@ Lol:AddParagraph({
     Content = [[ A Tab Where Most of The Core Features Lay Here. [Must Hold Any Gun to Work] ]]
 })
 
-local ToggleGood = Lol:AddToggle("AutoG", {Title = "Auto Kill [No Mercy]", Description = "Automatically Kills People. [Must Hold Any Gun to Work]", Default = true })
+local ToggleGood = Lol:AddToggle("AutoG", {Title = "Auto Kill [No Mercy]", Description = "Automatically Kills People. [Must Hold Any Gun to Work]", Default = false })
 ToggleGood:OnChanged(function(toggled)
     isAutoHitEnabledGood = toggled
 end)
 
-local ToggleMid = Lol:AddToggle("AutoM", {Title = "Auto Kill [Slow]", Description = "Automatically Kills People. [Must Hold Any Gun to Work]", Default = true })
+local ToggleMid = Lol:AddToggle("AutoM", {Title = "Auto Kill [Slow]", Description = "Automatically Kills People. [Must Hold Any Gun to Work]", Default = false })
 ToggleMid:OnChanged(function(toggled)
     isAutoHitEnabledMid = toggled
 end)
