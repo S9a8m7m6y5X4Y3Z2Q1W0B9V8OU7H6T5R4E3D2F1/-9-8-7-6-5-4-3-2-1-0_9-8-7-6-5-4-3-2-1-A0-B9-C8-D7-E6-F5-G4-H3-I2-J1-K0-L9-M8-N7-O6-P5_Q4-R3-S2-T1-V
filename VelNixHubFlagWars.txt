@@ -1,0 +1,265 @@
+--// Cache
+
+local getgenv, getnamecallmethod, hookmetamethod, hookfunction, newcclosure, checkcaller, lower, gsub, match
+	= getgenv, getnamecallmethod, hookmetamethod, hookfunction, newcclosure, checkcaller, string.lower, string.gsub, string.match;
+
+--// Loaded check
+
+if getgenv().ED_AntiKick then
+	return
+end
+
+--// Variables
+
+local cloneref = cloneref or function(...) return ... end -- PR NOTE: use for extra protection
+local clonefunction = clonefunction or function(...) return ... end
+local Players, LocalPlayer, StarterGui = cloneref(game:GetService("Players")), cloneref(game:GetService("Players").LocalPlayer), cloneref(game:GetService("StarterGui"))
+
+local SetCore = clonefunction(StarterGui.SetCore)
+local GetDebugId = clonefunction(game.GetDebugId)
+local FindFirstChild = clonefunction(game.FindFirstChild) -- PR NOTE: this will be used to prevent kick baits relating to Unable to cast value to std::string
+
+local compareinstances = (compareinstances and function(ins1, ins2)
+		if typeof(ins1) == "Instance" and typeof(ins2) == "Instance" then
+			return compareinstances(ins1, ins2);
+		end
+	end)
+or
+function(ins1, ins2)
+	return (typeof(ins1) == "Instance" and typeof(ins2) == "Instance") and GetDebugId(ins1) == GetDebugId(ins2);
+end;
+
+local function CanCastToSTDString(val)
+	-- PR NOTE: using FindFirstChild, this will make sure invalid arguments like newproxy() are sent through
+	local success, err = pcall(FindFirstChild, game, val);
+	return success --and not match(err, "Unable to cast value to std::string");
+end
+
+--// Global Variables
+
+getgenv().ED_AntiKick = {
+	Enabled = true, -- Set to false if you want to disable the Anti-Kick.
+	SendNotifications = false, -- Set to true if you want to get notified for every event
+	CheckCaller = true -- Set to true if you want to disable kicking by other executed scripts
+}
+
+--// Main
+
+local OldNamecall;
+OldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(...)
+	local self, message = ...
+	local method = getnamecallmethod()
+	
+	if ((getgenv().ED_AntiKick.CheckCaller and not checkcaller()) or true) and compareinstances(self, LocalPlayer) and gsub(method, "^%l", string.upper) == "Kick" and ED_AntiKick.Enabled then
+		if CanCastToSTDString(message) then
+			if getgenv().ED_AntiKick.SendNotifications then
+				SetCore(StarterGui, "SendNotification", { -- PR NOTE: prevent stack overflow :)
+					Title = "Exunys Developer",
+					Text = "The script has successfully intercepted an attempted kick.",
+					Icon = "rbxassetid://6238540373",
+					Duration = 2,
+				})
+			end
+
+			return; -- PR NOTE: calling :Kick() should return 0 args but returning nil will return 1 arg, bad news...
+		end
+	end
+
+	return OldNamecall(...)
+end))
+
+local OldFunction;
+OldFunction = hookfunction(LocalPlayer.Kick, function(...)
+	local self, message = ...
+
+	if ((getgenv().ED_AntiKick.CheckCaller and not checkcaller()) or true) and compareinstances(self, LocalPlayer) and ED_AntiKick.Enabled then
+		if CanCastToSTDString(message) then
+			if getgenv().ED_AntiKick.SendNotifications then
+				SetCore(StarterGui, "SendNotification", { -- PR NOTE: prevent stack overflow :)
+					Title = "Exunys Developer",
+					Text = "The script has successfully intercepted an attempted kick.",
+					Icon = "rbxassetid://6238540373",
+					Duration = 2,
+				})
+			end
+
+			return;
+		end
+	end
+end)
+
+if getgenv().ED_AntiKick.SendNotifications then
+	StarterGui:SetCore("SendNotification", {
+		Title = "Exunys Developer",
+		Text = "Anti-Kick script loaded!",
+		Icon = "rbxassetid://6238537240",
+		Duration = 3,
+	})
+end
+
+local isAutoHitEnabledGood = false
+local isAutoHitEnabledMid = false
+
+local playerService = game:GetService("Players")
+local runService = game:GetService("RunService")
+local replicatedStorage = game:GetService("ReplicatedStorage")
+
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua", true))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua", true))()
+local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua", true))()
+
+Fluent:Notify({
+    Title = [[ [ VelNix Hub - Loaded! ]
+ VelNix V1.0.0: Public Loaded.]],
+    Content = [[Feel Free to Showcase.]],
+    Duration = 5,
+    Type = "Info"
+})
+
+local executorName = "Unknown Executor - If You See This Your Executor is Gay."
+if identifyexecutor then
+    executorName = identifyexecutor()
+end
+
+local Window = Fluent:CreateWindow({
+    Title = "VelNix Hub - V1.0.0",
+    SubTitle = "By [Orealated] - " .. executorName,
+    TabWidth = 180,
+    Size = UDim2.fromOffset(500, 250),
+    Acrylic = false,
+    Theme = "Darker",
+    MinimizeKey = Enum.KeyCode.LeftControl -- Used when there's no MinimizeKeybind
+})
+
+local Tabs = {
+    KILL = Window:AddTab({ Title = "Auto Kill", Icon = "skull" }),
+}
+
+local Lol = Tabs.KILL:AddSection("VelNix - Auto Kill")
+Lol:AddParagraph({
+    Title = "[ VelNix: Auto Kill Tab ]",
+    Content = [[ A Tab Where Most of The Core Features Lay Here. [Must Hold Any Gun to Work] ]]
+})
+
+local ToggleGood = Lol:AddToggle("AutoG", {Title = "Auto Kill [No Mercy]", Description = "Automatically Kills People. [Must Hold Any Gun to Work]", Default = true })
+ToggleGood:OnChanged(function(toggled)
+    isAutoHitEnabledGood = toggled
+end)
+
+local ToggleMid = Lol:AddToggle("AutoM", {Title = "Auto Kill [Slow]", Description = "Automatically Kills People. [Must Hold Any Gun to Work]", Default = true })
+ToggleMid:OnChanged(function(toggled)
+    isAutoHitEnabledMid = toggled
+end)
+
+local function getEquippedWeapon(character)
+    for _, child in ipairs(character:GetChildren()) do
+        if child:IsA("Tool") then
+            return child
+        end
+    end
+    return nil
+end
+
+local function hitClosestPlayerGood()
+    local player = playerService.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then return end
+
+    local closestPlayers = {}
+
+    for _, target in ipairs(playerService:GetPlayers()) do
+        if target ~= player and target.Character and target.Character:FindFirstChild("HumanoidRootPart") and target.Team ~= player.Team then
+            local targetHRP = target.Character.HumanoidRootPart
+            local distance = (humanoidRootPart.Position - targetHRP.Position).Magnitude
+            table.insert(closestPlayers, { player = target, distance = distance })
+        end
+    end
+
+    table.sort(closestPlayers, function(a, b) return a.distance < b.distance end)
+
+    if #closestPlayers > 0 then
+        local closestPlayer = closestPlayers[1].player
+        local targetPart = closestPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if targetPart then
+            local direction = (targetPart.Position - humanoidRootPart.Position).unit
+            local equippedWeapon = getEquippedWeapon(character)
+            if not equippedWeapon then return end
+
+            local args = {
+                [1] = equippedWeapon,
+                [2] = {
+                    ["p"] = targetPart.Position,
+                    ["pid"] = 1,
+                    ["part"] = targetPart,
+                    ["d"] = closestPlayers[1].distance,
+                    ["maxDist"] = closestPlayers[1].distance,
+                    ["h"] = targetPart,
+                    ["m"] = targetPart.Material,
+                    ["sid"] = 2,
+                    ["t"] = 0.00000000000000000,
+                    ["n"] = direction
+                }
+            }
+
+            replicatedStorage.WeaponsSystem.Network.WeaponHit:FireServer(unpack(args))
+        end
+    end
+end
+
+local function hitClosestPlayerMid()
+    local player = playerService.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    if not humanoidRootPart then return end
+
+    local closestDistance = math.huge
+    local closestPlayer = nil
+
+    for _, target in ipairs(playerService:GetPlayers()) do
+        if target ~= player and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+            local targetHRP = target.Character.HumanoidRootPart
+            local distance = (humanoidRootPart.Position - targetHRP.Position).Magnitude
+            if distance < closestDistance then
+                closestDistance = distance
+                closestPlayer = target
+            end
+        end
+    end
+
+    if closestPlayer then
+        local targetPart = closestPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if targetPart then
+            local direction = (targetPart.Position - humanoidRootPart.Position).unit
+            local equippedWeapon = getEquippedWeapon(character)
+            if not equippedWeapon then return end
+
+            local args = {
+                [1] = equippedWeapon,
+                [2] = {
+                    ["p"] = targetPart.Position,
+                    ["pid"] = 1,
+                    ["part"] = targetPart,
+                    ["d"] = closestDistance,
+                    ["maxDist"] = closestDistance,
+                    ["h"] = targetPart,
+                    ["m"] = targetPart.Material,
+                    ["sid"] = 2,
+                    ["t"] = 0.00000000000000000,
+                    ["n"] = direction
+                }
+            }
+
+            replicatedStorage.WeaponsSystem.Network.WeaponHit:FireServer(unpack(args))
+        end
+    end
+end
+
+runService.Heartbeat:Connect(function()
+    if isAutoHitEnabledGood then
+        hitClosestPlayerGood()
+    end
+    if isAutoHitEnabledMid then
+        hitClosestPlayerMid()
+    end
+end)
