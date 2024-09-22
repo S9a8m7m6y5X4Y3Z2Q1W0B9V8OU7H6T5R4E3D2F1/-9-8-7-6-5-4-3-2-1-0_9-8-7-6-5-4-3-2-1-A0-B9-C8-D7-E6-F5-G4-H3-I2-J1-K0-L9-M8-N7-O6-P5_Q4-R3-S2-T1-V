@@ -28,21 +28,9 @@ function nurysium_module.getBall()
     return nil
 end
 
-local getTrainingBall = function()
-    local trainingBallsFolder = workspace:WaitForChild("TrainingBalls")
-    for _, ball in ipairs(trainingBallsFolder:GetChildren()) do
-        if ball:IsA("BasePart") and ball:GetAttribute("realBall") then
-            return ball
-        end
-    end
-end
-
 local Nurysium_Util = {
     getBall = function()
         return nurysium_module.getBall()
-    end,
-    getTrainingBall = function()
-        return getTrainingBall()
     end
 }
 
@@ -63,15 +51,6 @@ local originalResolveParryRemote
 local nurysium_Data = nil
 local hit_Sound = nil
 local closest_Entity = nil
-
-local aura_Enabled = false
-local auto_curve = false
-local auto_spam = false
-local anti_curve_spam_Enabled = false
-local visualize_Enabled = false
-local night_mode_Enabled = false
-local spectate_Enabled = false
-local target_closest_player = true
 
 local Services = {game:GetService("AdService"),game:GetService("SocialService")}
 
@@ -103,7 +82,7 @@ local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.
 
 Fluent:Notify({
     Title = [[ [ VelNix Hub - Loaded! ]
- VelNix V2.0.0: Public Loaded.]],
+ VelNix V2.2.0: Public Loaded.]],
     Content = [[Feel Free to Showcase.]],
     Duration = 5,
     Type = "Info"
@@ -115,7 +94,7 @@ if identifyexecutor then
 end
 
 local Window = Fluent:CreateWindow({
-    Title = "VelNix Hub - V2.0.0",
+    Title = "VelNix Hub - V2.2.0",
     SubTitle = "By [Orealated] - " .. executorName,
     TabWidth = 180,
     Size = UDim2.fromOffset(500, 250),
@@ -217,7 +196,7 @@ Mainy:AddParagraph({
     Title = "[ VelNix: Main Tab ]",
     Content = [[ A Tab Where Most of The Core Features Lay Here.]]
 })
-local Toggle = Mainy:AddToggle("PingBasedParry", {Title = "Auto Parry And Auto Spam", Description = [[Works With High Amount of Ping Like 200-300. Vulnerable to Aerodynamic Slash. No Area Training Support as it Can Ruin Ap.]], Default = true })
+local Toggle = Mainy:AddToggle("PingBasedParry", {Title = "Auto Parry & Auto Spam", Description = [[Works With High Amount of Ping Like 200-300. No Area Training Support as it Can Ruin Ap.]], Default = true })
 Toggle:OnChanged(function(toggled)
     aura_Enabled = toggled
     auto_spam = toggled
@@ -254,7 +233,7 @@ Toggle:OnChanged(function(toggled)
 
             Main.Name = "Main"
             Main.Parent = AutoSpamButSpammierjdndnsjzjs
-            Main.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+            Main.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
             Main.BorderSizePixel = 0
             Main.Position = UDim2.new(0.5, 0, 0.5, 0)
             Main.Size = UDim2.new(0.3, 0, 0.25, 0)
@@ -263,8 +242,8 @@ Toggle:OnChanged(function(toggled)
             UICorner.CornerRadius = UDim.new(0.1, 0)
             UICorner.Parent = Main
 
-            UIStroke.Color = Color3.fromRGB(255, 255, 255)
-            UIStroke.Thickness = 2
+            UIStroke.Color = Color3.fromRGB(200, 200, 210)
+            UIStroke.Thickness = 1.5
             UIStroke.Parent = Main
 
             TitleLabel.Name = "TitleLabel"
@@ -272,21 +251,21 @@ Toggle:OnChanged(function(toggled)
             TitleLabel.BackgroundTransparency = 1
             TitleLabel.Position = UDim2.new(0, 0, 0.05, 0)
             TitleLabel.Size = UDim2.new(1, 0, 0.2, 0)
-            TitleLabel.Font = Enum.Font.SourceSansBold
+            TitleLabel.Font = Enum.Font.GothamBold
             TitleLabel.Text = "Manual Spam Control"
             TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-            TitleLabel.TextSize = 24
+            TitleLabel.TextSize = 22
 
             IndercanotTextBlah.Name = "IndercanotTextBlah"
             IndercanotTextBlah.Parent = Main
-            IndercanotTextBlah.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+            IndercanotTextBlah.BackgroundColor3 = Color3.fromRGB(100, 100, 105)
             IndercanotTextBlah.BorderSizePixel = 0
             IndercanotTextBlah.Size = UDim2.new(0.8, 0, 0.4, 0)
             IndercanotTextBlah.Position = UDim2.new(0.1, 0, 0.3, 0)
-            IndercanotTextBlah.Font = Enum.Font.SourceSansBold
+            IndercanotTextBlah.Font = Enum.Font.GothamBold
             IndercanotTextBlah.Text = "OFF"
             IndercanotTextBlah.TextColor3 = Color3.fromRGB(255, 255, 255)
-            IndercanotTextBlah.TextSize = 22
+            IndercanotTextBlah.TextSize = 20
             
             local buttonCorner = UICorner:Clone()
             buttonCorner.CornerRadius = UDim.new(0.2, 0)
@@ -297,10 +276,10 @@ Toggle:OnChanged(function(toggled)
             ContextLabel.BackgroundTransparency = 1
             ContextLabel.Position = UDim2.new(0, 0, 0.8, 0)
             ContextLabel.Size = UDim2.new(1, 0, 0.2, 0)
-            ContextLabel.Font = Enum.Font.SourceSans
-            ContextLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-            ContextLabel.TextSize = 16
-            ContextLabel.Text = "Click The Button to Toggle Spam Mode"
+            ContextLabel.Font = Enum.Font.Gotham
+            ContextLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
+            ContextLabel.TextSize = 13
+            ContextLabel.Text = "Click the button to toggle spam mode"
 
             local dragEnabled = false
             local dragInput = nil
@@ -333,8 +312,6 @@ Toggle:OnChanged(function(toggled)
                 end
             end)
 
-            local userInputService = game:GetService("UserInputService")
-            local runService = game:GetService("RunService")
             local is_Green = false
             local originalParryRemote = nil
 
@@ -375,12 +352,12 @@ Toggle:OnChanged(function(toggled)
             local function toggleColor()
                 is_Green = not is_Green
                 if is_Green then
-                    IndercanotTextBlah.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+                    IndercanotTextBlah.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
                     IndercanotTextBlah.Text = "ON"
                     aura_Enabled = false
                     auto_spam = false
                 else
-                    IndercanotTextBlah.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+                    IndercanotTextBlah.BackgroundColor3 = Color3.fromRGB(100, 100, 105)
                     IndercanotTextBlah.Text = "OFF"
                     aura_Enabled = true
                     auto_spam = true
@@ -389,7 +366,7 @@ Toggle:OnChanged(function(toggled)
 
             IndercanotTextBlah.MouseButton1Click:Connect(toggleColor)
 
-            runService.RenderStepped:Connect(function()
+            RunService.RenderStepped:Connect(function()
                 if is_Green and originalParryRemote then
                     task.spawn(function()
                         local closest_Entity = getClosestEntity()
@@ -448,38 +425,226 @@ Toggle:OnChanged(function(toggled)
         })
     end
 end)
-
-local function getPingStatus(ping)
-    if ping <= 45 then
-        return "Excellent Ping"
-    elseif ping <= 95 then
-        return "Good Ping"
-    elseif ping <= 165 then
-        return "Decent Ping"
-    elseif ping <= 225 then
-        return "Moderate Ping"
-    elseif ping <= 300 then
-        return "High Ping"
-    else
-        return "Very High Ping"
-    end
-end
-
-Others:AddButton({
-    Title = "Check Ping",
-    Description = "Checks Your Ping.",
-    Callback = function()
-        local ping = Stats.Network.ServerStatsItem["Data Ping"]:GetValue()
-        local pingStatus = getPingStatus(ping)
-
-        Fluent:Notify({
-            Title = "[ VelNix Hub - Ping Checker ]",
-            Content = "Your Current Ping is: " .. tostring(ping) .. " ms [" .. pingStatus .. "]",
-            Duration = 5,
-            Type = "Info"
-        })
-    end
+local gravityStrength = 20
+local Toggle = Others:AddToggle("GravityToggle", {
+    Title = "Gravity Fly/Jump",
+    Description = "Toggles Gravity Fly/Jump.",
+    Default = false
 })
+Toggle:OnChanged(function(toggled)
+    isGravityEnabled = toggled
+end)
+local Toggle = Others:AddToggle("ShowPerformanceStats", {
+    Title = "Performance Stats",
+    Description = "Displays Detailed Stats Including: Fps, Ping, Frame Time, Memory Usage",
+    Default = false
+})
+
+local performanceStatsDisplay
+
+Toggle:OnChanged(function(toggled)
+    if toggled then
+        if not performanceStatsDisplay then
+            performanceStatsDisplay = Instance.new("ScreenGui", game.CoreGui)
+            performanceStatsDisplay.Name = "PerformanceStatsDisplay"
+            performanceStatsDisplay.ResetOnSpawn = false
+
+            local MainFrame = Instance.new("Frame", performanceStatsDisplay)
+            MainFrame.Size = UDim2.new(0, 250, 0, 180)
+            MainFrame.Position = UDim2.new(0, 10, 0, 10)
+            MainFrame.BackgroundTransparency = 0.1
+            MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+            MainFrame.BorderSizePixel = 0
+
+            local UICorner = Instance.new("UICorner", MainFrame)
+            UICorner.CornerRadius = UDim.new(0, 8)
+
+            local UIStroke = Instance.new("UIStroke", MainFrame)
+            UIStroke.Thickness = 1
+            UIStroke.Color = Color3.fromRGB(80, 80, 90)
+
+            local TextLabel = Instance.new("TextLabel", MainFrame)
+            TextLabel.Size = UDim2.new(1, -10, 0, 120)
+            TextLabel.Position = UDim2.new(0, 5, 0, 5)
+            TextLabel.BackgroundTransparency = 1
+            TextLabel.TextColor3 = Color3.fromRGB(240, 240, 240)
+            TextLabel.Font = Enum.Font.Gotham
+            TextLabel.TextSize = 12
+            TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+            TextLabel.TextYAlignment = Enum.TextYAlignment.Top
+            TextLabel.TextStrokeTransparency = 0.75
+            TextLabel.RichText = true
+
+            local GeneralLabel = Instance.new("TextLabel", MainFrame)
+            GeneralLabel.Size = UDim2.new(1, -10, 0, 40)
+            GeneralLabel.Position = UDim2.new(0, 5, 0, 130)
+            GeneralLabel.BackgroundTransparency = 1
+            GeneralLabel.TextColor3 = Color3.fromRGB(240, 240, 240)
+            GeneralLabel.Font = Enum.Font.GothamBold
+            GeneralLabel.TextSize = 14
+            GeneralLabel.TextXAlignment = Enum.TextXAlignment.Center
+            GeneralLabel.TextYAlignment = Enum.TextYAlignment.Center
+            GeneralLabel.TextStrokeTransparency = 0.3
+            GeneralLabel.RichText = true
+
+            local frameCount = 0
+            local lastUpdateTime = tick()
+            local fps = 0
+
+            local function makeDraggable(frame)
+                local dragToggle = nil
+                local dragStart = nil
+                local startPos = nil
+                local dragInput = nil
+
+                local function updateInput(input)
+                    local delta = input.Position - dragStart
+                    frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+                end
+
+                frame.InputBegan:Connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                        dragToggle = true
+                        dragStart = input.Position
+                        startPos = frame.Position
+                        input.Changed:Connect(function()
+                            if input.UserInputState == Enum.UserInputState.End then
+                                dragToggle = false
+                            end
+                        end)
+                    end
+                end)
+
+                frame.InputChanged:Connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseMovement then
+                        dragInput = input
+                    end
+                end)
+
+                game:GetService("UserInputService").InputChanged:Connect(function(input)
+                    if input == dragInput and dragToggle then
+                        updateInput(input)
+                    end
+                end)
+            end
+
+            local RunService = game:GetService("RunService")
+            local Stats = game:GetService("Stats")
+            local Players = game:GetService("Players")
+
+            local function getPerformanceStatus(fps, ping, memoryUsage, frameTime)
+                local fpsStatus, pingStatus, memoryStatus, frameTimeStatus
+
+                if fps >= 55 then
+                    fpsStatus = {"Excellent", Color3.fromRGB(0, 255, 0), 5}
+                elseif fps >= 45 then
+                    fpsStatus = {"Good", Color3.fromRGB(255, 255, 0), 4}
+                elseif fps >= 30 then
+                    fpsStatus = {"Moderate", Color3.fromRGB(255, 165, 0), 3}
+                elseif fps >= 20 then
+                    fpsStatus = {"Bad", Color3.fromRGB(255, 140, 0), 2}
+                else
+                    fpsStatus = {"Trash", Color3.fromRGB(255, 0, 0), 1}
+                end
+
+                if ping <= 60 then
+                    pingStatus = {"Excellent", Color3.fromRGB(0, 255, 0), 5}
+                elseif ping <= 120 then
+                    pingStatus = {"Good", Color3.fromRGB(255, 255, 0), 4}
+                elseif ping <= 180 then
+                    pingStatus = {"Moderate", Color3.fromRGB(255, 165, 0), 3}
+                elseif ping <= 250 then
+                    pingStatus = {"Bad", Color3.fromRGB(255, 140, 0), 2}
+                else
+                    pingStatus = {"Trash", Color3.fromRGB(255, 0, 0), 1}
+                end
+
+                if memoryUsage <= 600 then
+                    memoryStatus = {"Excellent", Color3.fromRGB(0, 255, 0), 5}
+                elseif memoryUsage <= 1000 then
+                    memoryStatus = {"Good", Color3.fromRGB(255, 255, 0), 4}
+                elseif memoryUsage <= 1400 then
+                    memoryStatus = {"Moderate", Color3.fromRGB(255, 165, 0), 3}
+                elseif memoryUsage <= 1800 then
+                    memoryStatus = {"Bad", Color3.fromRGB(255, 140, 0), 2}
+                else
+                    memoryStatus = {"Trash", Color3.fromRGB(255, 0, 0), 1}
+                end
+
+                if frameTime <= 16 then
+                    frameTimeStatus = {"Excellent", Color3.fromRGB(0, 255, 0), 5}
+                elseif frameTime <= 25 then
+                    frameTimeStatus = {"Good", Color3.fromRGB(255, 255, 0), 4}
+                elseif frameTime <= 35 then
+                    frameTimeStatus = {"Moderate", Color3.fromRGB(255, 165, 0), 3}
+                elseif frameTime <= 45 then
+                    frameTimeStatus = {"Bad", Color3.fromRGB(255, 140, 0), 2}
+                else
+                    frameTimeStatus = {"Trash", Color3.fromRGB(255, 0, 0), 1}
+                end
+
+                return fpsStatus, pingStatus, memoryStatus, frameTimeStatus
+            end
+
+            local function getGeneralStatus(scores)
+                local averageScore = 0
+                for _, score in ipairs(scores) do
+                    averageScore = averageScore + score
+                end
+                averageScore = averageScore / #scores
+
+                if averageScore >= 4.5 then
+                    return {"Overall Performance: Excellent", Color3.fromRGB(0, 255, 0)}
+                elseif averageScore >= 3.5 then
+                    return {"Overall Performance: Good", Color3.fromRGB(255, 255, 0)}
+                elseif averageScore >= 2.5 then
+                    return {"Overall Performance: Moderate", Color3.fromRGB(255, 165, 0)}
+                elseif averageScore >= 1.5 then
+                    return {"Overall Performance: Bad", Color3.fromRGB(255, 140, 0)}
+                else
+                    return {"Overall Performance: Trash", Color3.fromRGB(255, 0, 0)}
+                end
+            end
+
+            RunService.RenderStepped:Connect(function(deltaTime)
+                frameCount = frameCount + 1
+                local currentTime = tick()
+                if currentTime - lastUpdateTime >= 1 then
+                    fps = frameCount / (currentTime - lastUpdateTime)
+                    lastUpdateTime = currentTime
+                    frameCount = 0
+                end
+
+                local ping = Stats.Network.ServerStatsItem["Data Ping"]:GetValue()
+                local memoryUsage = Stats:GetTotalMemoryUsageMb()
+                local frameTime = deltaTime * 1000
+                local playerCount = #Players:GetPlayers()
+
+                local fpsStatus, pingStatus, memoryStatus, frameTimeStatus = getPerformanceStatus(fps, ping, memoryUsage, frameTime)
+                local generalStatus = getGeneralStatus({
+                    fpsStatus[3], pingStatus[3], memoryStatus[3], frameTimeStatus[3]
+                })
+
+                TextLabel.Text = string.format(
+                    "Ping: %.2f ms <font color='rgb(%d,%d,%d)'>[%s]</font>\nFPS: %.2f <font color='rgb(%d,%d,%d)'>[%s]</font>\nMemory: %.2f MB <font color='rgb(%d,%d,%d)'>[%s]</font>\nFrame Time: %.2f ms <font color='rgb(%d,%d,%d)'>[%s]</font>\nPlayers: %d",
+                    ping, pingStatus[2].R * 255, pingStatus[2].G * 255, pingStatus[2].B * 255, pingStatus[1],
+                    fps, fpsStatus[2].R * 255, fpsStatus[2].G * 255, fpsStatus[2].B * 255, fpsStatus[1],
+                    memoryUsage, memoryStatus[2].R * 255, memoryStatus[2].G * 255, memoryStatus[2].B * 255, memoryStatus[1],
+                    frameTime, frameTimeStatus[2].R * 255, frameTimeStatus[2].G * 255, frameTimeStatus[2].B * 255, frameTimeStatus[1],
+                    playerCount
+                )
+
+                GeneralLabel.Text = string.format(
+                    "<font color='rgb(%d,%d,%d)'>%s</font>",
+                    generalStatus[2].R * 255, generalStatus[2].G * 255, generalStatus[2].B * 255, generalStatus[1]
+                )
+            end)
+        end
+    elseif performanceStatsDisplay then
+        performanceStatsDisplay:Destroy()
+        performanceStatsDisplay = nil
+    end
+end)
 local Toggle = Others:AddToggle("AnticurveSpam", {Title = "Anti Curve Spam", Description = "Disables Your Curving, Can Make Parrying Better.", Default = false })
 Toggle:OnChanged(function(toggled)
     anti_curve_spam_Enabled = toggled
@@ -654,6 +819,17 @@ local orbitSpeedSlider = Customizers:AddSlider("Orbit Ball - Speed", {
         orbitSpeed = tonumber(value)
     end
 })
+local Slider = Customizers:AddSlider("GravityStrength", {
+    Title = "Gravity Fly - Strength",
+    Description = "Adjust the Strength of The Gravity Fly Feature.",
+    Default = 20,
+    Min = 1,
+    Max = 30,
+    Rounding = 2,
+    Callback = function(value)
+        gravityStrength = value
+    end
+})
 local Misc = Tabs.Misc:AddSection("VelNix - Miscellaneous")
 Misc:AddParagraph({
     Title = "[ VelNix Hub: Miscellaneous Tab ]",
@@ -700,37 +876,46 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Orealated/VelNix/main
 local Logs = Tabs.Loggs:AddSection("VelNix - Changelogs")
 Logs:AddParagraph({
     Title = "[ VelNix: V1.1.2 ]",
-    Content = [[ [#] Fixed Most Bugs Where it Accidentally Parries The Ball Even Tho Your Not The One Being Targeted.
- [%] Improved Auto Spam And Auto Parry.]]
+    Content = [[ [%] Improved Auto Spam And Auto Parry.
+ [#] Fixed Most Bugs Where it Accidentally Parries The Ball Even Tho Your Not The One Being Targeted.]]
 })
 Logs:AddParagraph({
     Title = "[ VelNix: V1.2.0 ]",
-    Content = [[ [#] Fixed More Bugs Where it Accidentally Parries The Ball Even Tho Your Not The One Being Targeted.
- [%] Improved Long Range Auto Parry.]]
+    Content = [[ [%] Improved Long Range Auto Parry.
+ [#] Fixed More Bugs Where it Accidentally Parries The Ball Even Tho Your Not The One Being Targeted.]]
 })
 Logs:AddParagraph({
     Title = "[ VelNix: V2.0.0 ]",
     Content = [[ [%] Rewritten Both Auto Parry And Auto Spam.
- [+] More Streamlined Ap.
- [+] Better Ball Detection.
  [%] Optimized Most Features
  [#] Fixed Some Memory Leaks.
+ [+] More Streamlined Ap.
+ [+] Better Ball Detection.
  [+] Added a 5 New Features: Teleport to Ball, Orbit Ball, Manual Spam, Toggle Click TP And AI.
  [+] Added a New Section Called "Customizers/Sliders." Where You Can Customize Some Stuff, Incase You Dont Like The Set Configs.
  [+] Added a Button in Your Backpack to Toggle VelNix Hub UI.
  [+] 2 New Tabs: "Utilities." And "Credits."
  [!] Massive Credits to Eniko For Streamlining Most Features.]]
 })
+Logs:AddParagraph({
+    Title = "[ VelNix: V2.2.0 ]",
+    Content = [[ [%] Improved AI.
+ [%] Replaced Ping Checker With Performance Stats.
+ [%] Better UI For Manual Spam.
+ [+] Added Aerodynamic Slash Detection. [NOT TESTED]
+ [+] Added Gravity Fly/Jump, Aswell as Letting You Customize it.
+]]
+})
 local Former = Tabs.EnikoS:AddSection("VelNix - Credits")
 Former:AddParagraph({
     Title = "[ Orealated ]",
     Content = [[ Former Owner - All Hubs I Made Suck.
- What I Do: I Design the GUIs and Decide on the UI and Descriptions. I Also Provide Ideas to Eniko or Create Them and Give Them to Him, Which He Then Tweaks it.]]
+ What I Do: I Design the GUIs And Decide on the UI And Descriptions. I Also Provide Ideas to Eniko or Create Them And Give Them to Him, Which he Then Tweaks it.]]
 })
 Former:AddParagraph({
     Title = "[ Eniko ]",
     Content = [[ Owner - Former Gave me Source!
- What I Do: I Wait Until the Owner Direct Messages Me and Tweak the Stuff He Gave Me.]]
+ What I Do: I Wait Until The Owner Direct Messages me And Tweak The Stuff he Gave me.]]
 })
 
 local function clamp(value, min, max)
@@ -804,6 +989,28 @@ task.spawn(function()
     end
 end)
 
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+RunService.PostSimulation:Connect(function()
+    if not workspace.CurrentCamera then
+        return
+    end
+
+    local character = LocalPlayer.Character
+
+    if not character then
+        return
+    end
+
+    if not isGravityEnabled then
+        workspace.Gravity = 196.2
+        return
+    end
+
+    workspace.Gravity = 196.2 / (gravityStrength / 10)
+end)
+
 task.defer(function()
     RunService.Stepped:Connect(function()
         if auto_win and workspace.Alive:FindFirstChild(local_player.Name) then
@@ -844,8 +1051,7 @@ task.defer(function()
 
     local function improvedAvoidWalls(startPos, targetPos)
         local direction = (targetPos - startPos).Unit
-        local rayLength = 20
-        local ray = Ray.new(startPos, direction * rayLength)
+        local ray = Ray.new(startPos, direction * 20)
         local hit, hitPosition, normal = workspace:FindPartOnRayWithIgnoreList(ray, {localPlayer.Character})
 
         if hit then
@@ -856,31 +1062,13 @@ task.defer(function()
         return targetPos
     end
 
-    runService.Heartbeat:Connect(function()
-        if not ai_Enabled or not workspace.Alive:FindFirstChild(localPlayer.Name) then
-            return
-        end
+    local function interpolatePosition(startPos, targetPos)
+        return startPos:Lerp(targetPos, 0.1)
+    end
 
-        local self = Nurysium_Util.getBall()
-        if not self or not closest_Entity then
-            return
-        end
-
-        local hrp = closest_Entity:FindFirstChild('HumanoidRootPart')
-        if not hrp then
-            return
-        end
-
-        local tickNow = tick()
-        local ballPosition = self.Position
-        local ballDistance = localPlayer:DistanceFromCharacter(ballPosition)
-        local playerPosition = localPlayer.Character.PrimaryPart.Position
-        local targetPosition = hrp.Position
-        local targetDistance = localPlayer:DistanceFromCharacter(targetPosition)
-        local targetLookVector = hrp.CFrame.LookVector
-        local resolvedPosition = Vector3.zero
-
-        if aura_table.is_Spamming then
+    local function calculateNextMove(playerPosition, targetPosition, ballPosition, ballDistance, targetDistance, isSpamming, targetLookVector)
+        local resolvedPosition
+        if isSpamming then
             resolvedPosition = targetPosition + (playerPosition - targetPosition).Unit * 8
         else
             if targetDistance > 10 then
@@ -898,32 +1086,36 @@ task.defer(function()
             resolvedPosition = playerPosition + (playerPosition - ballPosition).Unit * 10
         end
 
+        return resolvedPosition
+    end
+
+    runService.Heartbeat:Connect(function()
+        if not ai_Enabled or not workspace.Alive:FindFirstChild(localPlayer.Name) then
+            return
+        end
+
+        local self = Nurysium_Util.getBall()
+        if not self or not closest_Entity then
+            return
+        end
+
+        local hrp = closest_Entity:FindFirstChild('HumanoidRootPart')
+        if not hrp then
+            return
+        end
+
+        local playerPosition = localPlayer.Character.PrimaryPart.Position
+        local ballPosition = self.Position
+        local ballDistance = localPlayer:DistanceFromCharacter(ballPosition)
+        local targetPosition = hrp.Position
+        local targetDistance = localPlayer:DistanceFromCharacter(targetPosition)
+        local targetLookVector = hrp.CFrame.LookVector
+
+        local resolvedPosition = calculateNextMove(playerPosition, targetPosition, ballPosition, ballDistance, targetDistance, aura_table.is_Spamming, targetLookVector)
         resolvedPosition = improvedAvoidWalls(playerPosition, resolvedPosition)
 
-        walkTo(resolvedPosition)
-    end)
-end)
-
-local teleportInterval = tonumber(teleportIntervalSlider.Value)
-local lastTeleportTime = 0
-
-task.defer(function()
-    RunService.PreRender:Connect(function()
-        local self = Nurysium_Util.getBall()
-        if not self or not tp_hit then return end
-        local player = local_player.Character
-        local ball_Position = self.Position
-        local player_Position = player.HumanoidRootPart.Position
-
-        local currentTime = tick()
-        if tp_hit and self:GetAttribute('target') == local_player.Name and workspace.Alive:FindFirstChild(local_player.Name) and (currentTime - lastTeleportTime) >= teleportInterval then
-            local safe_Distance = 22
-            local direction = (ball_Position - player_Position).Unit
-            local target_Position = ball_Position - direction * safe_Distance
-
-            player.HumanoidRootPart.CFrame = CFrame.new(target_Position)
-            lastTeleportTime = currentTime
-        end
+        local smoothPosition = interpolatePosition(playerPosition, resolvedPosition)
+        walkTo(smoothPosition)
     end)
 end)
 
@@ -1109,13 +1301,19 @@ coroutine.wrap(function()
         local speedFactor = 3.25 - (ping / 150)
         local speedFactorPingBased = 5.5 - (ping / 100)
         aura_table.parry_Range = math.max(math.max(ping, 3.5) + ball_Speed / speedFactor, speedFactorPingBased)
-
         aura_table.spam_Range = math.clamp((math.max(ping / 8, 15) + ball_Speed / 5.5), 0, 60)
 
         pcall(function()
             local velocity_angle = math.abs(math.acos(ball_Direction:Dot(ball_Velocity.Unit)))
             aura_table.is_Spamming = aura_table.hit_Count > 1 or (target_Distance <= aura_table.spam_Range and ball_Distance < 10 and ball_Speed > 10) and ball_Velocity.Y > -50 and velocity_angle < 0.2
         end)
+
+        if ball_Velocity.Y < -180 and ballEntity:GetAttribute('target') and ballEntity:FindFirstChild("AeroDynamicSlashVFX") then
+            aura_table.parry_Range /= 2
+            task.delay(2.5, function()
+                aura_table.parry_Range = originalParryRange
+            end)
+        end
 
         if ball_Dot < -0.2 then
             aura_table.ball_Warping = tick()
@@ -1144,7 +1342,7 @@ coroutine.wrap(function()
             return
         end
 
-        if ballEntity:GetAttribute('target') == local_player.Name and ball_Distance <= aura_table.parry_Range and not aura_table.is_ball_Warping and ball_Speed > 0 and ball_Dot > 0.1 and aura_table.canParry then
+        if ballEntity:GetAttribute('target') == local_player.Name and ball_Distance <= aura_table.parry_Range and not aura_table.is_ball_Warping and ball_Dot > 0.1 and aura_table.canParry then
             task.spawn(Parry, target_Position)
             aura_table.hit_Count = aura_table.hit_Count + 1
             task.delay(0.55 + (ping / 100), function()
@@ -1160,16 +1358,16 @@ coroutine.wrap(function()
             until (tick() - aura_table.hit_Time) >= 1
             aura_table.canParry = true
         end)
+
+        function resetAuraTable()
+            aura_table.hit_Time = tick() * 10
+            aura_table.hit_Count = 0
+            aura_table.is_ball_Warping = false
+            aura_table.is_Spamming = false
+            aura_table.canParry = true
+            aura_table.last_target = nil
+        end
+
+        initializate("nurysium_temp")
     end)
-
-    function resetAuraTable()
-        aura_table.hit_Time = tick() * 10
-        aura_table.hit_Count = 0
-        aura_table.is_ball_Warping = false
-        aura_table.is_Spamming = false
-        aura_table.canParry = true
-        aura_table.last_target = nil
-    end
-
-    initializate("nurysium_temp")
 end)()
